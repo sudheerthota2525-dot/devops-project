@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: patient-api-deployment
+  namespace: devops-project
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: patient-api
+  template:
+    metadata:
+      labels:
+        app: patient-api
+    spec:
+      containers:
+        - name: patient-api
+          image: patient-api:v1
+          ports:
+            - containerPort: 3000
