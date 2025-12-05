@@ -1,0 +1,45 @@
+{
+  "dashboard": {
+    "id": null,
+    "title": "Healthcare Microservices Dashboard",
+    "tags": ["microservices", "healthcare", "devops"],
+    "timezone": "browser",
+    "schemaVersion": 16,
+    "version": 1,
+    "panels": [
+      {
+        "type": "graph",
+        "title": "CPU Usage",
+        "targets": [
+          {
+            "expr": "sum(rate(container_cpu_usage_seconds_total[5m]))",
+            "legendFormat": "CPU"
+          }
+        ],
+        "id": 1
+      },
+      {
+        "type": "graph",
+        "title": "Memory Usage",
+        "targets": [
+          {
+            "expr": "sum(container_memory_usage_bytes)",
+            "legendFormat": "Memory"
+          }
+        ],
+        "id": 2
+      },
+      {
+        "type": "graph",
+        "title": "Pod Restarts",
+        "targets": [
+          {
+            "expr": "sum(kube_pod_container_status_restarts_total)",
+            "legendFormat": "Restarts"
+          }
+        ],
+        "id": 3
+      }
+    ]
+  }
+}
