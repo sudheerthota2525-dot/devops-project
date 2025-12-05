@@ -1,0 +1,12 @@
+replicaCount: 2
+
+image:
+  repository: sudheerthota/patient-api
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3000
+
+containerPort: 3000
