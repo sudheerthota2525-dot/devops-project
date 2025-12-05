@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: portal-ui
+spec:
+  type: ClusterIP
+  selector:
+    app: portal-ui
+  ports:
+    - protocol: TCP
+      port: 8080
+      targetPort: 8080
