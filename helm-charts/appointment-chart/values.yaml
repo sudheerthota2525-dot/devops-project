@@ -1,0 +1,12 @@
+replicaCount: 2
+
+image:
+  repository: sudheerthota/appointment-service
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3001
+
+containerPort: 3001
