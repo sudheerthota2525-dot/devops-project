@@ -4,9 +4,10 @@ metadata:
   name: portal-ui
   namespace: healthcare
 spec:
-  type: ClusterIP
+  type: NodePort
   selector:
     app: portal-ui
   ports:
     - port: 80
       targetPort: 80
+      nodePort: 30080
