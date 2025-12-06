@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: portal-ui
+  namespace: healthcare
   labels:
     app: portal-ui
 spec:
@@ -16,6 +17,7 @@ spec:
     spec:
       containers:
         - name: portal-ui
-          image: sudheerthota/portal-ui:latest
+          image: portal-ui:latest
+          imagePullPolicy: Never
           ports:
-            - containerPort: 8080
+            - containerPort: 80
