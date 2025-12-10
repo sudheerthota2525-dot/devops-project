@@ -6,6 +6,6 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", service: "patient-api" });
 });
 
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log(`patient-api listening on port ${port}`);
 });
