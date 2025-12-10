@@ -8,5 +8,6 @@ RUN npm install
 COPY . .
 
 EXPOSE 3002
+ENV HOST=0.0.0.0
 
-CMD ["node", "app.js"]
+CMD ["npm", "start"]
