@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Colors (just for neat output)
+# Colors (for neat output)
 GREEN="\e[32m"
 BLUE="\e[34m"
 NC="\e[0m"
@@ -18,10 +18,12 @@ case $1 in
 
   run)
     echo -e "${BLUE}🚀 Running all services locally…${NC}"
-    docker run -d --name patient-api -p 3001:3001 patient-api:v1
-    docker run -d --name appointment-service -p 3002:3002 appointment-service:v1
-    docker run -d --name billing-service -p 3003:3003 billing-service:v1
+
+    docker run -d --name patient-api -p 3001:3000 patient-api:v1
+    docker run -d --name appointment-service -p 3002:3001 appointment-service:v1
+    docker run -d --name billing-service -p 3003:3002 billing-service:v1
     docker run -d --name portal-ui -p 8080:80 portal-ui:v1
+
     echo -e "${GREEN}✔ Services running. Access URLs below:\n${NC}"
     echo "Patient API       → http://localhost:3001"
     echo "Appointment API   → http://localhost:3002"
