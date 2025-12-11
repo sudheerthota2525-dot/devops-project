@@ -5,56 +5,52 @@ GREEN="\e[32m"
 BLUE="\e[34m"
 NC="\e[0m"
 
+NAMESPACE="healthcare"
+
 case $1 in
 
+  docker-env)
+    echo -e "${BLUE}Pointing Docker to Minikube…${NC}"
+    eval $(minikube -p minikube docker-env)
+    echo -e "${GREEN}Docker is now using Minikube daemon${NC}"
+    ;;
+
   build)
-    echo -e "${BLUE}Building all Docker images…${NC}"
+    echo -e "${BLUE}Building all Docker images inside Minikube…${NC}"
     docker build -t patient-api:v1 ./services/patient-api
     docker build -t appointment-service:v1 ./services/appointment-service
     docker build -t billing-service:v1 ./services/billing-service
     docker build -t portal-ui:v1 ./services/portal-ui
-    echo -e "${GREEN}Build complete${NC}"
-    ;;
-
-  run)
-    echo -e "${BLUE}Running all services locally…${NC}"
-
-    # Correct port mappings based on your app.js files
-    docker run -d --name patient-api -p 3001:3000 patient-api:v1
-    docker run -d --name appointment-service -p 3002:3001 appointment-service:v1
-    docker run -d --name billing-service -p 3003:3002 billing-service:v1
-    docker run -d --name portal-ui -p 8080:80 portal-ui:v1
-
-    echo -e "${GREEN}Services running. Access URLs below:\n${NC}"
-    echo "Patient API       → http://localhost:3001"
-    echo "Appointment API   → http://localhost:3002"
-    echo "Billing API       → http://localhost:3003"
-    echo "Portal UI         → http://localhost:8080"
+    echo -e "${GREEN}Build complete!${NC}"
     ;;
 
   deploy)
-    echo -e "${BLUE}Deploying all Kubernetes manifests…${NC}"
-    kubectl apply -f k8s-manifests/
-    echo -e "${GREEN}K8s deploy complete${NC}"
+    echo -e "${BLUE}Creating namespace if not exists…${NC}"
+    kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
+
+    echo -e "${BLUE}Deploying Kubernetes manifests…${NC}"
+    kubectl apply -n $NAMESPACE -f k8s-manifests/
+
+    echo -e "${GREEN}Deployment complete!${NC}"
     echo -e "${BLUE}Checking Pods…${NC}"
-    kubectl get pods -n default
+    kubectl get pods -n $NAMESPACE
+
     echo -e "${BLUE}Checking Services…${NC}"
-    kubectl get svc -n default
+    kubectl get svc -n $NAMESPACE
     ;;
 
   logs)
-    echo -e "${BLUE}Showing logs for container: $2${NC}"
-    docker logs -f $2
+    echo -e "${BLUE}Showing logs for: $2${NC}"
+    kubectl logs -n $NAMESPACE -f $2
     ;;
 
-  stop)
-    echo -e "${BLUE}Stopping all containers…${NC}"
-    docker stop $(docker ps -q)
-    docker rm $(docker ps -aq)
-    echo -e "${GREEN}All containers stopped and removed${NC}"
+  cleanup)
+    echo -e "${BLUE}Deleting all resources in namespace: $NAMESPACE…${NC}"
+    kubectl delete all --all -n $NAMESPACE
+    echo -e "${GREEN}Cleanup complete${NC}"
     ;;
 
   *)
-    echo "Usage: ./dev.sh {build|run|deploy|logs|stop}"
+    echo "Usage: ./dev.sh {docker-env|build|deploy|logs <pod>|cleanup}"
     ;;
 esac
