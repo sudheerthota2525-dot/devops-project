@@ -23,7 +23,10 @@
 │ 2. Login to Docker Hub (Secrets)          │
 │ 3. Build Docker images                    │
 │ 4. Push images to Docker Hub              │
-│                                           │              │
+│                                           │
+│❌ No Kubernetes access                   │
+│❌ No kubectl / helm here                 │
+│                                           │              
 └──────────────────────┬────────────────────┘
                        │ Docker Images
                        v
