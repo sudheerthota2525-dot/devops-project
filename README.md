@@ -1,214 +1,235 @@
 # Healthcare Microservices DevOps Project
 
-This project contains 4 microservices, Kubernetes deployments, Helm charts, Terraform automation, GitHub Actions CI/CD pipelines, and a full monitoring setup using Prometheus & Grafana.  
-This architecture is built exactly like real enterprise DevOps environments (CVS Health, Stanford Health Care, Kaiser, etc.).
+This repository demonstrates a **real-world DevOps implementation** using microservices, Docker, Kubernetes, Helm, Terraform, GitHub Actions CI/CD, and monitoring with Prometheus & Grafana.
+
+The project is designed to closely reflect **enterprise DevOps practices** followed in healthcare and large organizations (CVS Health, Stanford Health Care, Kaiser Permanente, etc.).
 
 ---
 
-# ⭐ Project Architecture
+## ⭐ Project Overview
 
-The system has 4 microservices:
+The system consists of **four microservices**:
 
 - **patient-api**
 - **appointment-service**
 - **billing-service**
-- **portal-ui (frontend)**
+- **portal-ui** (frontend)
 
-Technologies used:
-
-- Docker
-- Kubernetes (manifests)
-- Helm Charts
-- Terraform
-- GitHub Actions CI/CD
-- Prometheus + Grafana
+Each service is containerized and deployed to Kubernetes using manifests and Helm charts.
 
 ---
 
-# ⭐ Folder Structure (Final Blueprint)
+## ⭐ Technologies Used
 
-```
+- Docker
+- Kubernetes (Docker Desktop Kubernetes)
+- Helm
+- Terraform
+- GitHub Actions (CI)
+- Prometheus & Grafana
+- Bash scripting (`dev.sh`)
+
+---
+
+## ⭐ Folder Structure (Final)
+
 devops-project/
 │
 ├── services/
-│   ├── patient-api/
-│   ├── appointment-service/
-│   ├── billing-service/
-│   └── portal-ui/
+│ ├── patient-api/
+│ ├── appointment-service/
+│ ├── billing-service/
+│ └── portal-ui/
 │
 ├── k8s-manifests/
-│   ├── namespace.yaml
-│   ├── patient-api/
-│   ├── appointment-service/
-│   ├── billing-service/
-│   └── portal-ui/
+│ ├── namespace.yaml
+│ ├── patient-api/
+│ ├── appointment-service/
+│ ├── billing-service/
+│ └── portal-ui/
 │
 ├── helm-charts/
-│   ├── patient-api-chart/
-│   ├── appointment-chart/
-│   ├── billing-chart/
-│   └── portal-ui-chart/
+│ ├── patient-api-chart/
+│ ├── appointment-chart/
+│ ├── billing-chart/
+│ └── portal-ui-chart/
 │
 ├── terraform/
-│   ├── namespaces.tf
-│   ├── secrets.tf
-│   ├── variables.tf
-│   └── outputs.tf
-│
-├── .github/
-│   └── workflows/
-│       ├── build.yaml
-│       └── deploy.yaml
+│ ├── namespaces.tf
+│ ├── secrets.tf
+│ ├── variables.tf
+│ └── outputs.tf
 │
 ├── monitoring/
-│   ├── prometheus.yaml
-│   └── grafana-dashboards/
-│       └── main-dashboard.json
+│ ├── prometheus.yaml
+│ └── grafana-dashboards/
 │
+├── .github/
+│ └── workflows/
+│ └── build.yaml
+│
+├── dev.sh
 └── README.md
-```
+
+yaml
+Copy code
 
 ---
 
-# ⭐ Microservices
+## ⭐ Microservices Structure
 
-Each microservice includes:
+Each backend service contains:
 
 - `app.js`
 - `Dockerfile`
 - `.dockerignore`
 - `package.json`
 
-To run locally:
+Run locally (example):
 
 ```bash
 cd services/patient-api
 npm install
 npm start
-```
+⭐ Docker Images & Registry
+Docker images are built and pushed to Docker Hub using GitHub Actions.
 
----
+Docker Hub Username: sudheerthota25
 
-# ⭐ Docker Build Commands
+Images:
 
-```
-docker build -t sudheerthota/patient-api:latest ./services/patient-api
-docker build -t sudheerthota/appointment-service:latest ./services/appointment-service
-docker build -t sudheerthota/billing-service:latest ./services/billing-service
-docker build -t sudheerthota/portal-ui:latest ./services/portal-ui
-```
+sudheerthota25/patient-api
 
----
+sudheerthota25/appointment-service
 
-# ⭐ Kubernetes Deployment
+sudheerthota25/billing-service
 
+sudheerthota25/portal-ui
+
+⭐ dev.sh (Local Automation Script)
+dev.sh is used for local development and deployment.
+
+Available Commands
+bash
+Copy code
+./dev.sh build
+./dev.sh deploy
+./dev.sh logs <deployment-name>
+./dev.sh cleanup
+What Each Command Does
+Build Docker Images
+bash
+Copy code
+./dev.sh build
+Builds all microservice Docker images locally
+
+Deploy to Kubernetes
+bash
+Copy code
+./dev.sh deploy
+Creates namespace healthcare
+
+Deploys all Kubernetes manifests
+
+Verifies pods and services
+
+View Logs
+bash
+Copy code
+./dev.sh logs patient-api-deployment
+Cleanup
+bash
+Copy code
+./dev.sh cleanup
+Deletes the healthcare namespace and all resources
+
+⭐ Kubernetes Deployment (Manifests)
 Create namespace:
 
-```bash
+bash
+Copy code
 kubectl apply -f k8s-manifests/namespace.yaml
-```
+Deploy all services:
 
-Deploy patient-api:
-
-```bash
-kubectl apply -f k8s-manifests/patient-api/deployment.yaml
-kubectl apply -f k8s-manifests/patient-api/service.yaml
-```
-
-Repeat for appointment, billing, portal-ui.
-
----
-
-# ⭐ Helm Deployment (Production Ready)
-
-```
-helm upgrade --install patient-api ./helm-charts/patient-api-chart --namespace healthcare-app --create-namespace
-helm upgrade --install appointment-service ./helm-charts/appointment-chart --namespace healthcare-app
-helm upgrade --install billing-service ./helm-charts/billing-chart --namespace healthcare-app
-helm upgrade --install portal-ui ./helm-charts/portal-ui-chart --namespace healthcare-app
-```
-
----
-
-# ⭐ Terraform Setup
-
-Initialize:
-
-```bash
+bash
+Copy code
+kubectl apply -n healthcare \
+  -f k8s-manifests/patient-api/ \
+  -f k8s-manifests/appointment-service/ \
+  -f k8s-manifests/billing-service/ \
+  -f k8s-manifests/portal-ui/
+⭐ Helm Deployment (Production-Style)
+bash
+Copy code
+helm upgrade --install patient-api ./helm-charts/patient-api-chart -n healthcare --create-namespace
+helm upgrade --install appointment-service ./helm-charts/appointment-chart -n healthcare
+helm upgrade --install billing-service ./helm-charts/billing-chart -n healthcare
+helm upgrade --install portal-ui ./helm-charts/portal-ui-chart -n healthcare
+⭐ Terraform Setup
+bash
+Copy code
 cd terraform
 terraform init
 terraform apply
-```
+Terraform provisions:
 
-Terraform creates:
+Kubernetes namespace
 
-- Kubernetes namespace  
-- Docker registry secret  
-- Output variables  
+Secrets
 
----
+Outputs for reuse
 
-# ⭐ CI/CD (GitHub Actions)
+⭐ CI/CD (GitHub Actions)
+build.yaml
+Builds Docker images
 
-### 🔹 build.yaml  
-Builds and pushes Docker images for all four microservices.
+Pushes images to Docker Hub
 
-### 🔹 deploy.yaml  
-Deploys all Helm charts to Kubernetes automatically.
+Uses GitHub Secrets for authentication
 
----
+Does NOT deploy to Kubernetes (intentional design)
 
-# ⭐ Monitoring (Prometheus + Grafana)
+This separation avoids CI failures and follows industry best practices.
 
+⭐ Monitoring (Prometheus & Grafana)
 Prometheus scrapes:
 
-- CPU usage  
-- Memory usage  
-- Pod restarts  
-- Live pod metrics  
+CPU usage
 
-Grafana shows dashboards (JSON config is inside `monitoring/grafana-dashboards/`).
+Memory usage
 
----
+Pod restarts
 
-# ⭐ Access the UI
+Grafana dashboards visualize cluster and application metrics
 
-Forward the portal-ui service:
+⭐ Access the Application
+Check NodePort:
 
-```bash
-kubectl port-forward svc/portal-ui 8080:8080 -n healthcare-app
-```
-
+bash
+Copy code
+kubectl get svc portal-ui -n healthcare
 Open browser:
 
-```
-http://localhost:8080
-```
-
----
-
-# ⭐ Summary
-
+text
+Copy code
+http://localhost:<NODE_PORT>
+⭐ Summary
 This project demonstrates:
 
-- Real-world microservices architecture  
-- Automated Kubernetes deployments  
-- Helm-based production rollout  
-- GitHub Actions CI/CD  
-- Terraform infrastructure setup  
-- Full monitoring & observability  
-- Enterprise-grade DevOps pipeline  
+Enterprise-grade microservices architecture
 
-Perfect for:
+Docker image automation
 
-✔️ Resume  
-✔️ GitHub portfolio  
-✔️ DevOps interviews  
-✔️ Learning real industry patterns  
+Kubernetes deployments
 
----
+Helm-based releases
 
-# ⭐ Author
+GitHub Actions CI/CD
 
-**Shanmukha Sudheer Thota**  
+Secure secret management
+
+Observability with Prometheus & Grafana
+
+⭐ Author
+Shanmukha Sudheer Thota
 DevOps & Cloud Engineer
