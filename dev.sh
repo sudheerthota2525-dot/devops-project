@@ -2,37 +2,47 @@
 
 GREEN="\e[32m"
 BLUE="\e[34m"
-YELLOW="\e[33m"
 NC="\e[0m"
 
 NAMESPACE="healthcare"
 
 case $1 in
 
-  build|deploy)
+  build)
     echo -e "${BLUE}Building Docker images…${NC}"
-
     docker build -t patient-api:v1 ./services/patient-api
     docker build -t appointment-service:v1 ./services/appointment-service
     docker build -t billing-service:v1 ./services/billing-service
     docker build -t portal-ui:v1 ./services/portal-ui
+    echo -e "${GREEN}Build complete${NC}"
+    ;;
 
-    echo -e "${GREEN}Docker build completed successfully.${NC}"
-    echo -e "${YELLOW}Kubernetes deploy skipped (cluster not available).${NC}"
-    echo -e "${GREEN}Process completed without errors.${NC}"
+  deploy)
+    echo -e "${BLUE}Creating namespace…${NC}"
+    kubectl create namespace $NAMESPACE --dry-run=client -o yaml | kubectl apply -f -
+
+    echo -e "${BLUE}Deploying all services…${NC}"
+    kubectl apply -n $NAMESPACE \
+      -f k8s-manifests/patient-api/ \
+      -f k8s-manifests/appointment-service/ \
+      -f k8s-manifests/billing-service/ \
+      -f k8s-manifests/portal-ui/
+
+    echo -e "${GREEN}Deployment complete${NC}"
+
+    kubectl get pods -n $NAMESPACE
+    kubectl get svc -n $NAMESPACE
     ;;
 
   logs)
-    echo -e "${YELLOW}Logs skipped (Kubernetes cluster not available).${NC}"
-    echo -e "${GREEN}No errors.${NC}"
+    kubectl logs -n $NAMESPACE deployment/$2
     ;;
 
   cleanup)
-    echo -e "${YELLOW}Cleanup skipped (Kubernetes cluster not available).${NC}"
-    echo -e "${GREEN}No errors.${NC}"
+    kubectl delete namespace $NAMESPACE
     ;;
 
   *)
-    echo "Usage: ./dev.sh {build|deploy|logs|cleanup}"
+    echo "Usage: ./dev.sh {build|deploy|logs <deployment-name>|cleanup}"
     ;;
-esac
+esac  
